@@ -9,24 +9,27 @@ const Footer = () => {
     setYear(new Date().getFullYear());
   }, []);
 
-  const linkStyles = "text-neutral-500 hover:text-black transition-colors";
+  const linkStyles =
+    "text-foreground/50 hover:text-foreground transition-colors";
 
   return (
-    <footer className="bg-white text-[#111] border-t border-black/5 mt-24">
+    <footer className="bg-background text-foreground border-t border-border mt-24">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-20 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8">
           <div className="md:col-span-6 space-y-8">
             <Link href="/" className="inline-block">
-              <h2 className="text-4xl font-bold tracking-tighter">BIASING.</h2>
+              <h2 className="text-4xl font-bold tracking-tighter text-foreground">
+                BIASING.
+              </h2>
             </Link>
-            <p className="max-w-xs text-sm text-neutral-500 leading-relaxed font-light">
+            <p className="max-w-xs text-sm text-foreground/50 leading-relaxed font-light">
               The ultimate archive for k-pop fans. Record every memory by saving
               your favorite groups and idols.
             </p>
           </div>
 
           <div className="md:col-span-3 space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-black">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
               Navigation
             </h3>
             <ul className="space-y-4 text-sm font-medium">
@@ -49,7 +52,7 @@ const Footer = () => {
           </div>
 
           <div className="md:col-span-3 space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-black">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
               Connect
             </h3>
             <ul className="space-y-4 text-sm font-medium">
@@ -77,8 +80,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-black/5 flex justify-center items-center">
-          <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+        <div className="mt-16 pt-8 border-t border-border flex justify-center items-center">
+          <span className="text-[10px] font-black uppercase tracking-widest text-foreground/30">
             © {year ?? ""} BIASING INC. ALL RIGHTS RESERVED.
           </span>
         </div>

@@ -31,85 +31,108 @@ export default function HomeUser({ user }: HomeUserProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#111] font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
         <section className="flex flex-col gap-24">
-          <div className="space-y-12">
-            <div className="flex justify-between items-baseline border-b border-black/5 pb-4">
-              <h2 className="text-xl font-black uppercase tracking-widest">
-                Friends Updates
-              </h2>
-              <Link
-                href="/community"
-                className="text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black transition-colors"
-              >
-                Find Friends →
-              </Link>
+          <div className="relative group">
+            <div className="absolute -top-6 right-0 text-[16vw] md:text-[100px] font-black opacity-[0.03] select-none uppercase tracking-tighter leading-none pointer-events-none">
+              Updates
             </div>
 
-            <div className="space-y-8">
-              {friendActivity.map((act) => (
-                <div
-                  key={act.id}
-                  className="border-b border-black/5 pb-6 last:border-none"
-                >
-                  <div className="flex justify-between items-baseline mb-2">
-                    <span className="font-bold text-lg hover:underline cursor-pointer">
-                      @{act.friend}
+            <div className="grid grid-cols-1 bg-border border border-border">
+              <div className="bg-background p-10">
+                <div className="flex justify-between items-center mb-12">
+                  <div className="flex items-center gap-4">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
+                      Activity / Recent
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
-                      {act.time}
-                    </span>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
+                      Friends Updates
+                    </h3>
                   </div>
-                  <p className="text-neutral-600 font-light leading-relaxed">
-                    {act.action}{" "}
-                    <span className="font-medium text-black tracking-tight">
-                      {act.target}
-                    </span>
-                  </p>
                 </div>
-              ))}
+
+                <div className="space-y-8">
+                  {friendActivity.map((act) => (
+                    <div
+                      key={act.id}
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-2 pb-6 border-b border-border/40 last:border-none last:pb-0 group/item cursor-pointer"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
+                          @{act.friend}
+                        </span>
+                        <p className="text-sm text-foreground/60 font-light leading-none">
+                          {act.action}{" "}
+                          <span className="font-medium text-foreground tracking-tight">
+                            {act.target}
+                          </span>
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40 whitespace-nowrap">
+                        {act.time} →
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-12">
-            <div className="flex justify-between items-baseline border-b border-black/5 pb-4">
-              <h2 className="text-xl font-black uppercase tracking-widest">
-                Trending Now
-              </h2>
+          <div className="relative group">
+            <div className="absolute -top-6 right-0 text-[16vw] md:text-[100px] font-black opacity-[0.03] select-none uppercase tracking-tighter leading-none pointer-events-none">
+              Trending
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-black/10 border border-black/10">
-              <div className="bg-white p-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-6">
-                  Groups
-                </h3>
-                <div className="space-y-6">
-                  {["NewJeans", "BTS", "Stray Kids"].map((name) => (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-border border border-border">
+              <div className="bg-background p-10">
+                <div className="flex items-center gap-4 mb-12">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
+                    Top / 01
+                  </span>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
+                    Most Popular Groups
+                  </h3>
+                </div>
+
+                <div className="space-y-8">
+                  {["NewJeans", "BTS", "Stray Kids", "Twice"].map((name) => (
                     <div
                       key={name}
                       className="flex justify-between items-baseline group/item cursor-pointer"
                     >
-                      <span className="text-2xl font-bold tracking-tighter text-black hover:text-neutral-400 transition-colors duration-200">
+                      <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
                         {name}
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        2k Saves →
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-white p-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-6">
-                  Members
-                </h3>
-                <div className="space-y-6">
-                  {["Hanni", "Jungkook", "Felix"].map((name) => (
+              <div className="bg-background p-10">
+                <div className="flex items-center gap-4 mb-12">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
+                    Top / 02
+                  </span>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
+                    Most Biased Members
+                  </h3>
+                </div>
+
+                <div className="space-y-8">
+                  {["Hanni", "Jungkook", "Felix", "Momo"].map((name) => (
                     <div
                       key={name}
                       className="flex justify-between items-baseline group/item cursor-pointer"
                     >
-                      <span className="text-2xl font-bold tracking-tighter text-black hover:text-neutral-400 transition-colors duration-200">
+                      <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
                         {name}
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        1.2k Saves →
                       </span>
                     </div>
                   ))}

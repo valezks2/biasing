@@ -46,25 +46,28 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#111] font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
         <section className="flex flex-col lg:flex-row justify-between items-start gap-12 min-h-[70vh]">
           <div className="max-w-3xl">
-            <h1 className="text-[12vw] lg:text-[140px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase">
+            <h1 className="text-[12vw] lg:text-[140px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase text-foreground">
               Log
               <br />
               In.
             </h1>
-            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-xs">
+            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-xs text-foreground">
               Welcome back.
-              <span className="text-neutral-400"> Your lists are waiting.</span>
+              <span className="text-foreground/40">
+                {" "}
+                Your lists are waiting.
+              </span>
             </p>
           </div>
 
           <div className="w-full lg:w-[400px] mt-12 lg:mt-0">
             <form onSubmit={handleSubmit} className="space-y-10" noValidate>
               <div className="space-y-2 group">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                   Email
                 </label>
                 <input
@@ -72,25 +75,24 @@ export default function Page() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                 />
               </div>
 
               <div className="space-y-2 group flex flex-col">
-                {" "}
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent order-none"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent order-none text-foreground placeholder-foreground/30"
                 />
                 <div className="flex justify-between items-center order-first mb-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                     Password
                   </label>
                   <Link href="/auth/forgot-password">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black transition-colors cursor-pointer">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors cursor-pointer">
                       Forgot your password?
                     </span>
                   </Link>
@@ -109,19 +111,19 @@ export default function Page() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full border border-black bg-black text-white py-5 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border border-border bg-foreground text-background py-5 text-sm font-bold uppercase tracking-widest hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Entering..." : "Enter"}
                 </button>
 
-                <div className="flex flex-col items-center gap-4 mt-8 border-t border-black/5 pt-8">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <div className="flex flex-col items-center gap-4 mt-8 border-t border-border pt-8">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                     Don't have an account?
                   </p>
                   <Link href="/auth/sign-up" className="w-full">
                     <button
                       type="button"
-                      className="w-full border border-black py-5 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all cursor-pointer"
+                      className="w-full border border-border bg-background text-foreground py-5 text-sm font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-all cursor-pointer"
                     >
                       Create Account
                     </button>

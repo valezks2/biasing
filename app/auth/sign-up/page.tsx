@@ -93,18 +93,18 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#111] font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
         <section className="flex flex-col lg:flex-row justify-between items-start gap-12">
           <div className="max-w-3xl lg:sticky lg:top-20">
-            <h1 className="text-[12vw] lg:text-[140px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase">
+            <h1 className="text-[12vw] lg:text-[140px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase text-foreground">
               Sign
               <br />
               Up.
             </h1>
-            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-sm">
+            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-sm text-foreground">
               Start the journey.
-              <span className="text-neutral-400">
+              <span className="text-foreground/40">
                 {" "}
                 Create your personal archive and save your favorites.
               </span>
@@ -115,7 +115,7 @@ export default function Page() {
             <form onSubmit={handleSubmit} className="space-y-8" noValidate>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                     Name
                   </label>
                   <input
@@ -123,12 +123,12 @@ export default function Page() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Name"
-                    className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                    className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                     Username
                   </label>
                   <input
@@ -136,13 +136,13 @@ export default function Page() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="username"
-                    className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                    className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                   Email
                 </label>
                 <input
@@ -150,12 +150,12 @@ export default function Page() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                   Password
                 </label>
                 <input
@@ -163,7 +163,7 @@ export default function Page() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                 />
               </div>
 
@@ -175,10 +175,10 @@ export default function Page() {
                 </div>
               )}
 
-              <label className="pt-4 text-[11px] text-neutral-500 leading-relaxed flex items-center gap-3 cursor-pointer select-none">
+              <label className="pt-4 text-[11px] text-foreground/50 leading-relaxed flex items-center gap-3 cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  className="accent-black cursor-pointer"
+                  className="accent-foreground cursor-pointer"
                   checked={acceptedPolicy}
                   onChange={(e) => setAcceptedPolicy(e.target.checked)}
                 />
@@ -187,7 +187,7 @@ export default function Page() {
                   By creating an account, you agree to our{" "}
                   <Link
                     href="/terms"
-                    className="text-black underline hover:text-neutral-600 transition-colors"
+                    className="text-foreground underline hover:text-foreground/70 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     Terms of Service
@@ -195,7 +195,7 @@ export default function Page() {
                   and{" "}
                   <Link
                     href="/privacy-policy"
-                    className="text-black underline hover:text-neutral-600 transition-colors"
+                    className="text-foreground underline hover:text-foreground/70 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     Privacy Policy
@@ -208,19 +208,19 @@ export default function Page() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full border border-black bg-black text-white py-5 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full border border-border bg-foreground text-background py-5 text-sm font-bold uppercase tracking-widest hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50"
                 >
                   {loading ? "Creating Account..." : "Create Account"}
                 </button>
 
-                <div className="flex flex-col items-center gap-4 mt-8 border-t border-black/5 pt-8">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <div className="flex flex-col items-center gap-4 mt-8 border-t border-border pt-8">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                     Already part of biasing?
                   </p>
                   <Link href="/auth/login" className="w-full">
                     <button
                       type="button"
-                      className="w-full border border-black py-5 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all cursor-pointer"
+                      className="w-full border border-border bg-background text-foreground py-5 text-sm font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-all cursor-pointer"
                     >
                       Log In Instead
                     </button>
