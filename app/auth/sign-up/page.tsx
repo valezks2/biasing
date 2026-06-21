@@ -24,9 +24,25 @@ export default function Page() {
       setErrorMsg("The name cannot be empty.");
       return;
     }
+    if (name.length > 10) {
+      setErrorMsg("The name cannot exceed 10 characters.");
+      return;
+    }
 
-    if (!username.trim()) {
+    const cleanUsername = username.trim();
+    if (!cleanUsername) {
       setErrorMsg("Please choose a username.");
+      return;
+    }
+    if (cleanUsername.length < 3 || cleanUsername.length > 20) {
+      setErrorMsg("The username must be between 3 and 20 characters.");
+      return;
+    }
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(cleanUsername)) {
+      setErrorMsg(
+        "The username can only contain letters, numbers, and underscores.",
+      );
       return;
     }
 
@@ -51,11 +67,11 @@ export default function Page() {
 
     setLoading(true);
 
-    const { data: existingUser } = await supabase
+    const { data: existingUser, error: checkError } = await supabase
       .from("profiles")
       .select("username")
-      .eq("username", username)
-      .single();
+      .eq("username", cleanUsername)
+      .maybeSingle();
 
     if (existingUser) {
       setErrorMsg("This username is already taken.");
@@ -72,7 +88,7 @@ export default function Page() {
       options: {
         data: {
           display_name: name,
-          username: username,
+          username: cleanUsername,
         },
       },
     });
@@ -122,6 +138,7 @@ export default function Page() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    maxLength={10}
                     placeholder="Name"
                     className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   />
@@ -135,6 +152,7 @@ export default function Page() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    maxLength={20}
                     placeholder="username"
                     className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   />

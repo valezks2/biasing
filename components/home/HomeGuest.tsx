@@ -1,6 +1,65 @@
+"use client";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+
+interface TrendingItem {
+  name: string;
+  count: number;
+}
 
 export default function HomeGuest() {
+  const supabase = createClient();
+  const [trendingGroups, setTrendingGroups] = useState<TrendingItem[]>([]);
+  const [trendingBiases, setTrendingBiases] = useState<TrendingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrendingData = async () => {
+      try {
+        setLoading(true);
+
+        const { data: allItems, error } = await supabase
+          .from("profile_items")
+          .select("name, type");
+
+        if (error) throw error;
+
+        if (allItems) {
+          const groupCounts: { [key: string]: number } = {};
+          const biasCounts: { [key: string]: number } = {};
+
+          allItems.forEach((item) => {
+            if (item.type === "group") {
+              groupCounts[item.name] = (groupCounts[item.name] || 0) + 1;
+            } else if (item.type === "bias") {
+              biasCounts[item.name] = (biasCounts[item.name] || 0) + 1;
+            }
+          });
+
+          const sortedGroups = Object.keys(groupCounts)
+            .map((name) => ({ name, count: groupCounts[name] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 4);
+
+          const sortedBiases = Object.keys(biasCounts)
+            .map((name) => ({ name, count: biasCounts[name] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 4);
+
+          setTrendingGroups(sortedGroups);
+          setTrendingBiases(sortedBiases);
+        }
+      } catch (error) {
+        console.error("Error fetching trending data for guests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendingData();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
@@ -13,11 +72,8 @@ export default function HomeGuest() {
                 ING.
               </h1>
               <p className="text-xl lg:text-2xl font-medium leading-tight max-w-md text-foreground">
-                The ultimate archive for k-pop fans.
-                <span className="text-foreground/40">
-                  {" "}
-                  Record every memory.
-                </span>
+                The ultimate archive for k-pop fans.{" "}
+                <span className="text-foreground/40">Record every memory.</span>
               </p>
             </div>
 
@@ -45,7 +101,7 @@ export default function HomeGuest() {
             },
             {
               title: "Favorites History",
-              desc: "Save the exact date the exact date you started liking your favorite artists in your profile.",
+              desc: "Save the exact date you started liking your favorite artists in your profile.",
               label: "02 / Timeline",
             },
             {
@@ -69,9 +125,10 @@ export default function HomeGuest() {
         </section>
 
         <section className="relative group">
-          <div className="absolute -top-6 right-0 text-[16vw] md:text-[100px] font-black opacity-[0.03] select-none uppercase tracking-tighter leading-none text-foreground">
+          <div className="absolute -top-6 right-0 text-[16vw] md:text-[100px] font-black opacity-[0.03] select-none uppercase tracking-tighter leading-none text-foreground pointer-events-none">
             Trending
           </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-border border border-border">
             <div className="bg-background p-10">
               <div className="flex items-center gap-4 mb-12">
@@ -82,20 +139,37 @@ export default function HomeGuest() {
                   Most Popular Groups
                 </h3>
               </div>
+
               <div className="space-y-8">
-                {["NewJeans", "BTS", "Stray Kids", "Twice"].map((name) => (
-                  <div
-                    key={name}
-                    className="flex justify-between items-baseline group/item cursor-pointer"
-                  >
-                    <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
-                      {name}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
-                      2k Saves →
-                    </span>
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex justify-between items-baseline animate-pulse"
+                    >
+                      <div className="h-8 w-44 bg-foreground/10" />
+                      <div className="h-3 w-14 bg-foreground/5" />
+                    </div>
+                  ))
+                ) : trendingGroups.length > 0 ? (
+                  trendingGroups.map((group) => (
+                    <div
+                      key={group.name}
+                      className="flex justify-between items-baseline group/item select-none"
+                    >
+                      <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
+                        {group.name}
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        {group.count} {group.count === 1 ? "Save" : "Saves"}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs font-bold uppercase tracking-widest text-foreground/20 py-4">
+                    No data logged yet
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -108,20 +182,37 @@ export default function HomeGuest() {
                   Most Biased Members
                 </h3>
               </div>
+
               <div className="space-y-8">
-                {["Hanni", "Jungkook", "Felix", "Momo"].map((name) => (
-                  <div
-                    key={name}
-                    className="flex justify-between items-baseline group/item cursor-pointer"
-                  >
-                    <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
-                      {name}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
-                      1.2k Saves →
-                    </span>
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex justify-between items-baseline animate-pulse"
+                    >
+                      <div className="h-8 w-36 bg-foreground/10" />
+                      <div className="h-3 w-14 bg-foreground/5" />
+                    </div>
+                  ))
+                ) : trendingBiases.length > 0 ? (
+                  trendingBiases.map((bias) => (
+                    <div
+                      key={bias.name}
+                      className="flex justify-between items-baseline group/item select-none"
+                    >
+                      <span className="text-4xl font-bold tracking-tighter text-foreground hover:text-foreground/40 transition-colors duration-200">
+                        {bias.name}
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        {bias.count} {bias.count === 1 ? "Save" : "Saves"}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs font-bold uppercase tracking-widest text-foreground/20 py-4">
+                    No data logged yet
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

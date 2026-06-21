@@ -203,8 +203,6 @@ const Header = () => {
 
               {dropdownOpen && (
                 <div className="absolute right-0 mt-3 w-48 bg-background border border-border z-50 flex flex-col animate-in fade-in slide-in-from-top-2 duration-150">
-                  {/* Los bloques Link de Trending y Community han sido eliminados de aquí */}
-
                   <Link
                     href={username ? `/${username}` : "/onboarding"}
                     onClick={() => setDropdownOpen(false)}

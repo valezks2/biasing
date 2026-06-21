@@ -18,7 +18,6 @@ interface ModalAddProps {
   baseGroupCategories: { title: string }[];
   baseBiasCategories: { title: string }[];
   monthsRange: { value: string; label: string }[];
-  yearsRange: string[];
 }
 
 export const ModalAdd = ({
@@ -27,7 +26,6 @@ export const ModalAdd = ({
   baseGroupCategories,
   baseBiasCategories,
   monthsRange,
-  yearsRange,
 }: ModalAddProps) => {
   const [name, setName] = useState("");
   const [type, setType] = useState<"group" | "bias">("group");
@@ -64,6 +62,10 @@ export const ModalAdd = ({
       return;
     }
 
+    if (selectedImageUrl) {
+      return;
+    }
+
     const delayDebounceFn = setTimeout(async () => {
       setSearching(true);
       try {
@@ -85,7 +87,7 @@ export const ModalAdd = ({
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [name]);
+  }, [name, selectedImageUrl]);
 
   const handleSelectIdol = (item: KpopSearchResult) => {
     setName(item.name);
@@ -93,17 +95,59 @@ export const ModalAdd = ({
     setShowDropdown(false);
   };
 
+  const handleYearChange = (val: string) => {
+    setErrorMsg(null);
+    const currentYear = new Date().getFullYear();
+    const numericVal = parseInt(val, 10);
+
+    if (val === "") {
+      setYear("");
+      return;
+    }
+
+    if (!isNaN(numericVal)) {
+      if (numericVal > currentYear) {
+        return;
+      }
+
+      if (val.length >= 4) {
+        if (numericVal < 1990) {
+          setYear("1990");
+          return;
+        }
+        if (val.length > 4) {
+          return;
+        }
+      }
+    }
+
+    setYear(val);
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !category) return;
     setErrorMsg(null);
+
+    const currentYear = new Date().getFullYear();
+    const numericYear = parseInt(year, 10);
+
+    if (!year || year.length < 4 || isNaN(numericYear)) {
+      setErrorMsg("Please enter a valid 4-digit year.");
+      return;
+    }
+
+    if (numericYear < 1990 || numericYear > currentYear) {
+      setErrorMsg(`Year must be between 1990 and ${currentYear}.`);
+      return;
+    }
 
     let finalImg = selectedImageUrl;
     if (!finalImg) {
       if (searchResults.length > 0) {
         finalImg = searchResults[0].image;
       } else {
-        finalImg = "https://placehold.co/150";
+        finalImg = "/placeholder.png";
       }
     }
 
@@ -132,7 +176,7 @@ export const ModalAdd = ({
           Add a new idol or group into your record.
         </p>
 
-        <form onSubmit={handleSave} className="space-y-4">
+        <form onSubmit={handleSave} className="space-y-4" noValidate>
           <div>
             <label className="block text-[9px] font-black uppercase mb-1 text-foreground">
               Type:
@@ -173,7 +217,7 @@ export const ModalAdd = ({
             <input
               type="text"
               required
-              placeholder="E.G. TWICE / MOMO"
+              placeholder={type === "group" ? "E.G. TWICE" : "E.G. MOMO"}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -191,13 +235,15 @@ export const ModalAdd = ({
                   <div
                     key={idx}
                     onClick={() => handleSelectIdol(item)}
-                    className="flex items-center gap-3 p-2 hover:bg-foreground hover:text-background cursor-pointer transition-colors"
+                    className="flex items-center gap-3 p-2 hover:bg-foreground hover:text-background cursor-pointer transition-colors group"
                   >
-                    <img
-                      src={item.image || "https://placehold.co/50"}
-                      alt={item.name}
-                      className="w-6 h-6 object-cover border border-border bg-background"
-                    />
+                    <div className="relative w-6 h-6 border border-border overflow-hidden bg-foreground/10 flex-shrink-0">
+                      <img
+                        src={item.image || "/placeholder.png"}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <span className="text-[10px] font-black uppercase tracking-wider truncate">
                       {item.name}
                     </span>
@@ -240,22 +286,19 @@ export const ModalAdd = ({
                   </option>
                 ))}
               </select>
-              <select
+              <input
+                type="number"
+                min="1990"
+                max={new Date().getFullYear().toString()}
                 value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground cursor-pointer"
-              >
-                {yearsRange.map((yr) => (
-                  <option key={yr} value={yr}>
-                    {yr}
-                  </option>
-                ))}
-              </select>
+                onChange={(e) => handleYearChange(e.target.value)}
+                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground"
+              />
             </div>
           </div>
 
           {errorMsg && (
-            <div className="pt-4">
+            <div className="pt-2 animate-in fade-in duration-200">
               <p className="text-[10px] font-black uppercase tracking-widest text-red-500 border-l-2 border-red-500 pl-3">
                 {errorMsg}
               </p>

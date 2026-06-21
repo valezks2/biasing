@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import Image from "next/image"; // Importamos el componente de Next.js para optimizar imágenes
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -17,9 +18,10 @@ export default function SearchPage() {
 
     const fetchUsers = async () => {
       setLoading(true);
+      // 1. Modificamos el select para traer display_name y avatar_url
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, username")
+        .select("id, username, display_name, avatar_url")
         .ilike("username", `%${query}%`);
 
       if (!error && data) {
@@ -47,12 +49,28 @@ export default function SearchPage() {
             <Link
               key={profile.id}
               href={`/${profile.username}`}
-              className="border border-border p-6 flex justify-between items-center bg-background text-foreground hover:bg-foreground hover:text-background transition-all group cursor-pointer"
+              className="border border-border p-4 flex justify-between items-center bg-background text-foreground hover:bg-foreground hover:text-background transition-all group cursor-pointer"
             >
-              <span className="font-black text-sm uppercase tracking-wider">
-                @{profile.username}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-4">
+                <div className="relative w-12 h-12 bg-muted border border-border shrink-0 overflow-hidden">
+                  <img
+                    src={profile.avatar_url || "/placeholder.png"}
+                    alt={profile.username}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                  />
+                </div>
+
+                <div className="flex flex-col min-w-0">
+                  <span className="font-black text-sm uppercase tracking-wider truncate">
+                    {profile.display_name || "No Name"}
+                  </span>
+                  <span className="text-xs text-foreground/60 group-hover:text-background/60 truncate">
+                    @{profile.username}
+                  </span>
+                </div>
+              </div>
+
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-4 hidden sm:inline">
                 View profile &rarr;
               </span>
             </Link>

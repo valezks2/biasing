@@ -37,7 +37,12 @@
   }
 
   ::selection {
-  background-color: #000000;
-  color: #ffffff;
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+
+  .dark ::selection {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
   }
 }

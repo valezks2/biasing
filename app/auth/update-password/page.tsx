@@ -56,18 +56,18 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#111] font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
         <section className="flex flex-col lg:flex-row justify-between items-start gap-12 min-h-[70vh]">
           <div className="max-w-3xl">
-            <h1 className="text-[10vw] lg:text-[100px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase">
+            <h1 className="text-[10vw] lg:text-[100px] font-bold leading-[0.85] tracking-tighter mb-12 select-none uppercase text-foreground">
               Update
               <br />
               Password
             </h1>
-            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-xs">
+            <p className="text-xl lg:text-2xl font-medium leading-tight max-w-xs text-foreground">
               Create a new secure password.
-              <span className="text-neutral-400">
+              <span className="text-foreground/40">
                 {" "}
                 Make sure it's something you haven't used before.
               </span>
@@ -77,7 +77,7 @@ export default function UpdatePasswordPage() {
           <div className="w-full lg:w-[400px] mt-12 lg:mt-0">
             <form onSubmit={handleSubmit} className="space-y-10" noValidate>
               <div className="space-y-2 group">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                   New Password
                 </label>
                 <input
@@ -85,13 +85,13 @@ export default function UpdatePasswordPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   required
                 />
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
                   Confirm New Password
                 </label>
                 <input
@@ -99,7 +99,7 @@ export default function UpdatePasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border-b border-black py-4 text-lg focus:outline-none focus:border-neutral-400 transition-colors bg-transparent"
+                  className="w-full border-b border-border py-4 text-lg focus:outline-none focus:border-foreground transition-colors bg-transparent text-foreground placeholder-foreground/30"
                   required
                 />
               </div>
@@ -113,8 +113,8 @@ export default function UpdatePasswordPage() {
               )}
 
               {successMsg && (
-                <div className="border border-black bg-neutral-50 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-black">
+                <div className="border border-border bg-foreground/5 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
                     {successMsg}
                   </p>
                 </div>
@@ -124,14 +124,14 @@ export default function UpdatePasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full border border-black bg-black text-white py-5 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border border-border bg-foreground text-background py-5 text-sm font-bold uppercase tracking-widest hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Updating..." : "Update Password"}
                 </button>
 
-                <div className="flex flex-col items-center gap-4 mt-8 border-t border-black/5 pt-8">
+                <div className="flex flex-col items-center gap-4 mt-8 border-t border-border pt-8">
                   <Link href="/auth/login">
-                    <span className="text-[10px] font-black uppercase tracking-widest hover:underline cursor-pointer">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors cursor-pointer">
                       ← Cancel and return to Login
                     </span>
                   </Link>

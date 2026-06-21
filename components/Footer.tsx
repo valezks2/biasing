@@ -29,18 +29,18 @@ const Footer = () => {
           </div>
 
           <div className="md:col-span-3 space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/70 dark:text-foreground/40">
               Navigation
             </h3>
             <ul className="space-y-4 text-sm font-medium">
               <li>
-                <Link href="/trending" className={linkStyles}>
-                  Trending Now
+                <Link href="/home" className={linkStyles}>
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="/community" className={linkStyles}>
-                  Community
+                <Link href="/search" className={linkStyles}>
+                  Explore
                 </Link>
               </li>
               <li>
@@ -52,7 +52,7 @@ const Footer = () => {
           </div>
 
           <div className="md:col-span-3 space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/70 dark:text-foreground/40">
               Connect
             </h3>
             <ul className="space-y-4 text-sm font-medium">

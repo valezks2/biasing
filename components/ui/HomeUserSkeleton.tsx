@@ -1,14 +1,14 @@
 export default function HomeUserSkeleton() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans animate-pulse p-20">
-      <main className="max-w-[1400px] mx-auto px-6 lg:px-12 space-y-24">
+    <div className="min-h-screen bg-background text-foreground font-sans animate-pulse">
+      <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20 space-y-24">
         <div className="border border-border p-10 space-y-12">
           <div className="h-4 w-48 bg-foreground/10" />
           <div className="space-y-8">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex justify-between items-baseline border-b border-border/40 pb-6"
+                className="flex justify-between items-baseline border-b border-border/40 pb-6 last:border-none last:pb-0"
               >
                 <div className="space-y-2">
                   <div className="h-8 w-32 bg-foreground/10" />

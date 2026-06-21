@@ -25,7 +25,7 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("/icon.jpg");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [newPassword, setNewPassword] = useState("");
@@ -90,18 +90,40 @@ export default function SettingsPage() {
 
     setProfileMessage(null);
 
-    if (!username.trim()) {
-      setProfileMessage({ type: "error", text: "Please choose a username." });
-      return;
-    }
-
     if (!displayName.trim()) {
       setProfileMessage({ type: "error", text: "The name cannot be empty." });
       return;
     }
+    if (displayName.length > 10) {
+      setProfileMessage({
+        type: "error",
+        text: "The name cannot exceed 10 characters.",
+      });
+      return;
+    }
+
+    const cleanUsername = username.trim().toLowerCase();
+    if (!cleanUsername) {
+      setProfileMessage({ type: "error", text: "Please choose a username." });
+      return;
+    }
+    if (cleanUsername.length < 3 || cleanUsername.length > 20) {
+      setProfileMessage({
+        type: "error",
+        text: "The username must be between 3 and 20 characters.",
+      });
+      return;
+    }
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(cleanUsername)) {
+      setProfileMessage({
+        type: "error",
+        text: "The username can only contain letters, numbers, and underscores.",
+      });
+      return;
+    }
 
     setUpdating(true);
-    const cleanUsername = username.trim().toLowerCase();
 
     const { data: existingUser, error: searchError } = await supabase
       .from("profiles")
@@ -316,10 +338,12 @@ export default function SettingsPage() {
         <div className="border border-border p-6 flex flex-col sm:flex-row items-center gap-6 mb-6">
           <div className="relative w-16 h-16 border border-border overflow-hidden bg-foreground/10 flex-shrink-0">
             <Image
-              src={avatarUrl}
+              src={avatarUrl || "/placeholder.png"}
               alt="Avatar Preview"
               fill
+              sizes="64px"
               className="object-cover"
+              priority
             />
           </div>
           <div className="flex-1 text-center sm:text-left">
@@ -352,6 +376,7 @@ export default function SettingsPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                maxLength={20}
                 className="border border-border p-3 bg-background text-xs font-bold uppercase tracking-wider focus:outline-none text-foreground"
               />
             </div>
@@ -363,6 +388,7 @@ export default function SettingsPage() {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
+                maxLength={10}
                 className="border border-border p-3 bg-background text-xs font-bold uppercase tracking-wider focus:outline-none text-foreground"
               />
             </div>
