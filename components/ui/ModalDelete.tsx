@@ -14,6 +14,7 @@ interface ModalDeleteProps {
 
 export const ModalDelete = ({ item, onClose, onDelete }: ModalDeleteProps) => {
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -23,11 +24,13 @@ export const ModalDelete = ({ item, onClose, onDelete }: ModalDeleteProps) => {
   }, []);
 
   const handleConfirm = async () => {
+    setErrorMsg(null);
     try {
       setLoading(true);
       await onDelete();
     } catch (e) {
       console.error(e);
+      setErrorMsg("Failed to delete. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -39,12 +42,21 @@ export const ModalDelete = ({ item, onClose, onDelete }: ModalDeleteProps) => {
         <h3 className="text-sm font-black uppercase tracking-wider text-red-500 mb-2">
           Are you sure?
         </h3>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/70">
+        <p className="text-[9px] text-foreground/50 uppercase tracking-widest mb-6">
           This action will permanently remove{" "}
-          <span className="underline">{item.name}</span> from your profile.
+          <span className="text-foreground underline">{item.name}</span> from
+          your profile.
         </p>
 
-        <div className="flex gap-2 mt-6">
+        {errorMsg && (
+          <div className="mb-6 pt-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-red-500 border-l-2 border-red-500 pl-3">
+              {errorMsg}
+            </p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
           <button
             onClick={handleConfirm}
             disabled={loading}
@@ -54,7 +66,7 @@ export const ModalDelete = ({ item, onClose, onDelete }: ModalDeleteProps) => {
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-background text-foreground border border-border p-3 text-[10px] font-black uppercase tracking-widest hover:bg-foreground/5 cursor-pointer transition-all"
+            className="flex-1 bg-background text-foreground border border-border p-3 text-[10px] font-black uppercase tracking-widest hover:bg-foreground/5 transition-all cursor-pointer"
           >
             CANCEL
           </button>

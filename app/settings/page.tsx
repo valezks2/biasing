@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import SettingsSkeleton from "@/components/ui/SettingsSkeleton";
 
 type ThemeType = "light" | "dark" | "system";
 type MessageType = { type: "success" | "error"; text: string } | null;
@@ -267,11 +268,7 @@ export default function SettingsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="max-w-[800px] mx-auto px-6 py-20 text-[11px] font-black tracking-widest animate-pulse text-foreground">
-        LOADING SETTINGS...
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   return (

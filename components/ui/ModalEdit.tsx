@@ -31,6 +31,7 @@ export const ModalEdit = ({
 }: ModalEditProps) => {
   const [category, setCategory] = useState(item.category);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const dateParts = item.since?.split("/") || [];
   const [month, setMonth] = useState(dateParts[0] || "01");
@@ -46,11 +47,13 @@ export const ModalEdit = ({
   }, []);
 
   const handleSave = async () => {
+    setErrorMsg(null);
     try {
       setLoading(true);
       await onUpdate(category, `${month}/${year}`);
     } catch (e) {
       console.error(e);
+      setErrorMsg("Failed to update. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,11 +68,11 @@ export const ModalEdit = ({
         <h3 className="text-sm font-black uppercase tracking-wider mb-2 text-foreground">
           Edit {item.name}
         </h3>
-        <p className="text-[9px] text-foreground/50 uppercase tracking-widest mb-4">
-          Update the category or date of this item.
+        <p className="text-[9px] text-foreground/50 uppercase tracking-widest mb-6">
+          Update the category or date.
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mb-6">
           <div>
             <label className="block text-[9px] font-black uppercase mb-1 text-foreground">
               Move to list:
@@ -77,7 +80,7 @@ export const ModalEdit = ({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground"
+              className="w-full border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground cursor-pointer"
             >
               {categories.map((cat) => (
                 <option key={cat.title} value={cat.title}>
@@ -95,7 +98,7 @@ export const ModalEdit = ({
               <select
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
-                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground"
+                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground cursor-pointer"
               >
                 {monthsRange.map((m) => (
                   <option key={m.value} value={m.value}>
@@ -106,7 +109,7 @@ export const ModalEdit = ({
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground"
+                className="flex-1 border border-border p-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none bg-background text-foreground cursor-pointer"
               >
                 {yearsRange.map((yr) => (
                   <option key={yr} value={yr}>
@@ -118,7 +121,15 @@ export const ModalEdit = ({
           </div>
         </div>
 
-        <div className="flex gap-2 mt-6">
+        {errorMsg && (
+          <div className="mb-6 pt-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-red-500 border-l-2 border-red-500 pl-3">
+              {errorMsg}
+            </p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
           <button
             onClick={handleSave}
             disabled={loading}

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { createClient } from "../lib/supabase/server";
 import HomeGuest from "../components/home/HomeGuest";
 import HomeUser from "../components/home/HomeUser";
+import HomeUserSkeleton from "../components/ui/HomeUserSkeleton";
 
 async function MainContent() {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ async function MainContent() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<HomeSkeleton />}>
+    <Suspense fallback={<HomeUserSkeleton />}>
       <MainContent />
     </Suspense>
   );
