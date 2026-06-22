@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import SettingsSkeleton from "@/components/ui/SettingsSkeleton";
+import { ModalDeleteAccount } from "@/components/ui/ModalDeleteAccount";
 
 type ThemeType = "light" | "dark" | "system";
 type MessageType = { type: "success" | "error"; text: string } | null;
@@ -15,8 +16,12 @@ export default function SettingsPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [profileMessage, setProfileMessage] = useState<MessageType>(null);
   const [emailMessage, setEmailMessage] = useState<MessageType>(null);
@@ -24,18 +29,20 @@ export default function SettingsPage() {
 
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [theme, setTheme] = useState<ThemeType>("system");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as ThemeType;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
+    if (savedTheme) setTheme(savedTheme);
 
     const getProfile = async () => {
       const {
@@ -47,15 +54,15 @@ export default function SettingsPage() {
       }
 
       setUser(user);
-      setEmail(user.email || "");
+      setCurrentEmail(user.email || "");
 
-      const { data: profile, error } = await supabase
+      const { data: profile } = await supabase
         .from("profiles")
         .select("username, display_name, avatar_url")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (!error && profile) {
+      if (profile) {
         setDisplayName(profile.display_name || "");
         setUsername(profile.username || "");
         if (profile.avatar_url) setAvatarUrl(profile.avatar_url);
@@ -82,6 +89,39 @@ export default function SettingsPage() {
       root.classList.remove("light", "dark");
       root.classList.add(selectedTheme);
     }
+  };
+
+  const handleUpdateEmail = async () => {
+    setEmailMessage(null);
+
+    if (!newEmail.trim()) {
+      setEmailMessage({
+        type: "error",
+        text: "Please enter an email address",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      setEmailMessage({ type: "error", text: "Invalid email format" });
+      return;
+    }
+
+    setIsUpdatingEmail(true);
+
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+
+    if (error) {
+      setEmailMessage({ type: "error", text: error.message });
+    } else {
+      setEmailMessage({
+        type: "success",
+        text: "A verification email has been sent to the new address. Please check your inbox to confirm the change.",
+      });
+      setNewEmail("");
+    }
+    setIsUpdatingEmail(false);
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -123,7 +163,7 @@ export default function SettingsPage() {
       return;
     }
 
-    setUpdating(true);
+    setIsUpdatingProfile(true);
 
     const { data: existingUser, error: searchError } = await supabase
       .from("profiles")
@@ -137,7 +177,7 @@ export default function SettingsPage() {
         type: "error",
         text: "Error verifying username availability.",
       });
-      setUpdating(false);
+      setIsUpdatingProfile(false);
       return;
     }
 
@@ -146,7 +186,7 @@ export default function SettingsPage() {
         type: "error",
         text: "This username is already taken.",
       });
-      setUpdating(false);
+      setIsUpdatingProfile(false);
       return;
     }
 
@@ -167,7 +207,7 @@ export default function SettingsPage() {
           text: `Storage error: ${uploadError.message}`,
         });
         setUploadingImage(false);
-        setUpdating(false);
+        setIsUpdatingProfile(false);
         return;
       }
 
@@ -187,73 +227,70 @@ export default function SettingsPage() {
       updated_at: new Date().toISOString(),
     });
 
-    if (error) {
-      setProfileMessage({
-        type: "error",
-        text: "Error updating profile metadata.",
-      });
+    if (!error) {
+      window.location.reload();
     } else {
-      setProfileMessage({
-        type: "success",
-        text: "Profile updated successfully!",
-      });
-      setAvatarFile(null);
-      setAvatarUrl(finalAvatarUrl);
+      setProfileMessage({ type: "error", text: "Error updating profile" });
+      setIsUpdatingProfile(false);
     }
-    setUpdating(false);
   };
 
-  const handleUpdateAccount = async (type: "email" | "password") => {
-    if (type === "email") {
-      setEmailMessage(null);
-      if (!email.trim()) {
-        setEmailMessage({ type: "error", text: "Please enter your email." });
-        return;
-      }
+  const handleUpdatePassword = async () => {
+    setPasswordMessage(null);
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordMessage({ type: "error", text: "All fields are required" });
+      return;
     }
 
-    if (type === "password") {
-      setPasswordMessage(null);
-      const strongPasswordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,\-_])(?=.{8,})/;
-      if (!strongPasswordRegex.test(newPassword)) {
-        setPasswordMessage({
-          type: "error",
-          text: "The password must have at least 8 characters, including uppercase, lowercase, a number and a symbol.",
-        });
-        return;
-      }
+    if (newPassword !== confirmNewPassword) {
+      setPasswordMessage({
+        type: "error",
+        text: "New passwords do not match.",
+      });
+      return;
     }
 
-    setUpdating(true);
-
-    let error;
-    if (type === "email") {
-      ({ error } = await supabase.auth.updateUser({ email: email.trim() }));
-    } else {
-      ({ error } = await supabase.auth.updateUser({ password: newPassword }));
+    const strongPasswordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,\-_])(?=.{8,})/;
+    if (!strongPasswordRegex.test(newPassword)) {
+      setPasswordMessage({
+        type: "error",
+        text: "Password must have at least 8 characters, including uppercase, lowercase, a number and a symbol",
+      });
+      return;
     }
+
+    setIsUpdatingPassword(true);
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: user?.email || "",
+      password: currentPassword,
+    });
+
+    if (authError) {
+      setPasswordMessage({
+        type: "error",
+        text: "Current password is incorrect",
+      });
+      setIsUpdatingPassword(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
 
     if (error) {
-      if (type === "email")
-        setEmailMessage({ type: "error", text: error.message });
-      if (type === "password")
-        setPasswordMessage({ type: "error", text: error.message });
+      setPasswordMessage({ type: "error", text: error.message });
     } else {
-      if (type === "email") {
-        setEmailMessage({
-          type: "success",
-          text: "Confirmation link sent to your new email.",
-        });
-      } else {
-        setPasswordMessage({
-          type: "success",
-          text: "Password updated successfully!",
-        });
-        setNewPassword("");
-      }
+      setPasswordMessage({
+        type: "success",
+        text: "Password updated successfully!",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
     }
-    setUpdating(false);
+    setIsUpdatingPassword(false);
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -264,28 +301,32 @@ export default function SettingsPage() {
     setAvatarUrl(previewUrl);
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = confirm(
-      "ARE YOU SURE YOU WANT TO PERMANENTLY DELETE YOUR ACCOUNT? THIS CANNOT BE UNDONE.",
-    );
-    if (!confirmDelete || !user) return;
+  const handleDeleteAccount = async (password: string) => {
+    setIsDeletingAccount(true);
 
-    setUpdating(true);
-    const { error } = await supabase
-      .from("profiles")
-      .delete()
-      .eq("id", user.id);
-
-    if (!error) {
-      await supabase.auth.signOut();
-      router.push("/");
-      router.refresh();
-    } else {
-      setProfileMessage({
-        type: "error",
-        text: "Could not complete account deletion.",
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: password,
       });
-      setUpdating(false);
+
+      if (authError) throw new Error("Incorrect password");
+
+      const { error: functionError } = await supabase.functions.invoke(
+        "delete-account",
+        {
+          method: "POST",
+        },
+      );
+
+      if (functionError) throw new Error("Failed to delete account");
+
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch (err: any) {
+      throw err;
+    } finally {
+      setIsDeletingAccount(false);
     }
   };
 
@@ -359,7 +400,7 @@ export default function SettingsPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarChange}
-                disabled={updating || uploadingImage}
+                disabled={isUpdatingProfile || uploadingImage}
                 className="hidden"
               />
             </label>
@@ -411,10 +452,10 @@ export default function SettingsPage() {
 
             <button
               type="submit"
-              disabled={updating || uploadingImage}
+              disabled={isUpdatingProfile || uploadingImage}
               className="w-full bg-foreground text-background p-4 text-[10px] font-black uppercase tracking-[0.2em] border border-border hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50"
             >
-              {updating ? "SAVING..." : "SAVE PROFILE CHANGES"}
+              {isUpdatingProfile ? "SAVING..." : "SAVE PROFILE CHANGES"}
             </button>
           </div>
         </form>
@@ -430,37 +471,47 @@ export default function SettingsPage() {
             <label className="text-[10px] font-black uppercase tracking-widest">
               Update Email Address
             </label>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-3">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 border border-border p-3 bg-background text-xs font-bold tracking-wide focus:outline-none text-foreground"
+                value={currentEmail}
+                disabled
+                className="border border-border p-3 bg-foreground/5 text-xs font-bold tracking-wide cursor-not-allowed opacity-70"
               />
+              <input
+                type="email"
+                placeholder="ENTER NEW EMAIL"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="border border-border p-3 bg-background text-xs font-bold tracking-wide focus:outline-none text-foreground"
+              />
+
+              {emailMessage && (
+                <div className="pt-2">
+                  <p
+                    className={`text-[10px] font-black uppercase tracking-widest border-l-2 pl-3 ${
+                      emailMessage.type === "success"
+                        ? "text-green-600 border-green-600"
+                        : "text-red-500 border-red-500"
+                    }`}
+                  >
+                    {emailMessage.text}
+                  </p>
+                </div>
+              )}
+
               <button
                 type="button"
-                onClick={() => handleUpdateAccount("email")}
-                disabled={updating || uploadingImage}
+                onClick={handleUpdateEmail}
+                disabled={
+                  isUpdatingEmail || !newEmail || newEmail === currentEmail
+                }
                 className="border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest bg-foreground text-background hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50"
               >
-                Update Email
+                {isUpdatingEmail ? "UPDATING..." : "CONFIRM NEW EMAIL"}
               </button>
             </div>
           </div>
-
-          {emailMessage && (
-            <div className="py-4">
-              <p
-                className={`text-[10px] font-black uppercase tracking-widest border-l-2 pl-3 ${
-                  emailMessage.type === "success"
-                    ? "text-green-600 dark:text-green-400 border-green-600 dark:border-green-400"
-                    : "text-red-500 dark:text-red-400 border-red-500 dark:border-red-400"
-                }`}
-              >
-                {emailMessage.text}
-              </p>
-            </div>
-          )}
         </div>
 
         <div>
@@ -468,38 +519,54 @@ export default function SettingsPage() {
             <label className="text-[10px] font-black uppercase tracking-widest">
               Change Password
             </label>
-            <div className="flex flex-col sm:flex-row gap-3">
+
+            <div className="flex flex-col gap-3">
               <input
                 type="password"
-                placeholder="ENTER NEW PASSWORD"
+                placeholder="CURRENT PASSWORD"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="border border-border p-3 bg-background text-xs font-bold focus:outline-none"
+              />
+              <input
+                type="password"
+                placeholder="NEW PASSWORD"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="flex-1 border border-border p-3 bg-background text-xs font-bold tracking-wide focus:outline-none placeholder-foreground/30 text-foreground"
+                className="border border-border p-3 bg-background text-xs font-bold focus:outline-none"
               />
+              <input
+                type="password"
+                placeholder="CONFIRM NEW PASSWORD"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className="border border-border p-3 bg-background text-xs font-bold focus:outline-none"
+              />
+
+              {passwordMessage && (
+                <p
+                  className={`text-[10px] font-black uppercase tracking-widest border-l-2 pl-3 ${
+                    passwordMessage.type === "success"
+                      ? "text-green-600 border-green-600"
+                      : "text-red-500 border-red-500"
+                  }`}
+                >
+                  {passwordMessage.text}
+                </p>
+              )}
+
               <button
                 type="button"
-                onClick={() => handleUpdateAccount("password")}
-                disabled={updating || uploadingImage}
-                className="border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest bg-foreground text-background hover:bg-background hover:text-foreground transition-all cursor-pointer disabled:opacity-50"
+                onClick={handleUpdatePassword}
+                disabled={
+                  isUpdatingPassword || !currentPassword || !newPassword
+                }
+                className="border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest bg-foreground text-background hover:opacity-80 transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Change Password
+                {isUpdatingPassword ? "UPDATING..." : "CONFIRM PASSWORD CHANGE"}
               </button>
             </div>
           </div>
-
-          {passwordMessage && (
-            <div className="py-4">
-              <p
-                className={`text-[10px] font-black uppercase tracking-widest border-l-2 pl-3 ${
-                  passwordMessage.type === "success"
-                    ? "text-green-600 dark:text-green-400 border-green-600 dark:border-green-400"
-                    : "text-red-500 dark:text-red-400 border-red-500 dark:border-red-400"
-                }`}
-              >
-                {passwordMessage.text}
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
@@ -517,14 +584,22 @@ export default function SettingsPage() {
             </p>
           </div>
           <button
-            onClick={handleDeleteAccount}
-            disabled={updating || uploadingImage}
+            onClick={() => setShowDeleteModal(true)}
+            disabled={isDeletingAccount}
             className="border border-red-500 text-red-500 bg-background px-6 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-background transition-all cursor-pointer"
           >
             Delete Account
           </button>
         </div>
       </section>
+
+      {showDeleteModal && (
+        <ModalDeleteAccount
+          onClose={() => setShowDeleteModal(false)}
+          onDelete={handleDeleteAccount}
+          isDeleting={isDeletingAccount}
+        />
+      )}
     </main>
   );
 }

@@ -75,15 +75,18 @@ export default function ProfileView({
     { title: "Stan", items: [] },
     { title: "Like", items: [] },
     { title: "Casual Listener", items: [] },
+    { title: "Dropped", items: [] },
   ];
 
   const baseBiasCategories = [
+    { title: "Soloists", items: [] },
     { title: "Ults of Ults", items: [] },
     { title: "Ults", items: [] },
     { title: "Semi Ults", items: [] },
     { title: "Regular", items: [] },
     { title: "Like", items: [] },
     { title: "Solo Stan", items: [] },
+    { title: "Dropped", items: [] },
   ];
 
   const mapItemsToCategories = (items: DbItem[]) => {
@@ -418,7 +421,7 @@ export default function ProfileView({
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-6 lg:gap-8 mt-4 lg:mt-0">
-              <div className="flex gap-6 border-y md:border-y-0 md:border-x border-border py-2 md:py-0 md:px-6">
+              <div className="flex gap-6 border-y md:border-y-0 md:border-x border-border py-6 md:py-0 md:px-6">
                 <div className="text-center md:text-left">
                   <span className="block text-2xl font-black tracking-tighter leading-none text-foreground">
                     {followersCount}
@@ -490,7 +493,6 @@ export default function ProfileView({
           baseGroupCategories={baseGroupCategories}
           baseBiasCategories={baseBiasCategories}
           monthsRange={monthsRange}
-          yearsRange={yearsRange}
         />
       )}
       {editingItem && (

@@ -61,7 +61,7 @@ export default function Page() {
     }
 
     if (!acceptedPolicy) {
-      setErrorMsg("You must accept the Privacy Policy to continue.");
+      setErrorMsg("You must accept the Privacy Policy and Terms to continue");
       return;
     }
 

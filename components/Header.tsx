@@ -23,6 +23,9 @@ const Header = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const handleOpenSearch = () => setIsSearchOpen(true);
+    window.addEventListener("open-search", handleOpenSearch);
+
     const getUserData = async () => {
       const {
         data: { user },
@@ -51,7 +54,6 @@ const Header = () => {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-
       if (currentUser) {
         const { data: profile } = await supabase
           .from("profiles")
@@ -71,6 +73,7 @@ const Header = () => {
 
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener("open-search", handleOpenSearch);
     };
   }, [supabase]);
 
@@ -89,7 +92,6 @@ const Header = () => {
         setIsSearchOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -131,12 +133,7 @@ const Header = () => {
           <div ref={searchRef} className="flex-1 flex justify-end items-center">
             <form
               onSubmit={handleSearchSubmit}
-              className={`flex items-center h-11 border transition-all duration-300 ease-in-out
-                ${
-                  isSearchOpen
-                    ? "w-full max-w-xl px-4 gap-3 bg-background border-border"
-                    : "w-11 px-3 bg-transparent border-transparent sm:hover:bg-foreground/5 cursor-pointer"
-                }`}
+              className={`flex items-center h-11 border transition-all duration-300 ease-in-out ${isSearchOpen ? "w-full max-w-xl px-4 gap-3 bg-background border-border" : "w-11 px-3 bg-transparent border-transparent sm:hover:bg-foreground/5 cursor-pointer"}`}
               onClick={() => !isSearchOpen && setIsSearchOpen(true)}
             >
               <svg
@@ -144,7 +141,6 @@ const Header = () => {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   strokeLinecap="round"
@@ -153,17 +149,14 @@ const Header = () => {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-
               <input
                 ref={inputRef}
                 type="text"
                 placeholder="SEARCH USERS..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full bg-transparent text-[11px] font-black tracking-[0.2em] uppercase focus:outline-none placeholder-foreground/30 text-foreground transition-all duration-200
-                  ${isSearchOpen ? "opacity-100 pointer-events-auto w-full" : "opacity-0 pointer-events-none w-0"}`}
+                className={`w-full bg-transparent text-[11px] font-black tracking-[0.2em] uppercase focus:outline-none placeholder-foreground/30 text-foreground transition-all duration-200 ${isSearchOpen ? "opacity-100 pointer-events-auto w-full" : "opacity-0 pointer-events-none w-0"}`}
               />
-
               {isSearchOpen && (
                 <button
                   type="button"
@@ -200,7 +193,6 @@ const Header = () => {
                   className="object-cover w-full h-full grayscale group-hover:grayscale-0 transition-all select-none pointer-events-none"
                 />
               </button>
-
               {dropdownOpen && (
                 <div className="absolute right-0 mt-3 w-48 bg-background border border-border z-50 flex flex-col animate-in fade-in slide-in-from-top-2 duration-150">
                   <Link

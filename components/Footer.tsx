@@ -1,16 +1,34 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 const Footer = () => {
   const [year, setYear] = useState<number | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
+    const supabase = createClient();
+
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+        if (profile) setUsername(profile.username);
+      }
+    };
+    fetchUser();
   }, []);
 
   const linkStyles =
-    "text-foreground/50 hover:text-foreground transition-colors";
+    "text-foreground/50 hover:text-foreground transition-colors cursor-pointer";
 
   return (
     <footer className="bg-background text-foreground border-t border-border mt-24">
@@ -34,17 +52,23 @@ const Footer = () => {
             </h3>
             <ul className="space-y-4 text-sm font-medium">
               <li>
-                <Link href="/home" className={linkStyles}>
+                <Link href="/" className={linkStyles}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/search" className={linkStyles}>
+                <button
+                  onClick={() => window.dispatchEvent(new Event("open-search"))}
+                  className={linkStyles}
+                >
                   Explore
-                </Link>
+                </button>
               </li>
               <li>
-                <Link href="/profile" className={linkStyles}>
+                <Link
+                  href={username ? `/${username}` : "/"}
+                  className={linkStyles}
+                >
                   Profile
                 </Link>
               </li>
