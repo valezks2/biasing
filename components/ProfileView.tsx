@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { ModalEdit } from "@/components/ui/ModalEdit";
 import { ModalDelete } from "@/components/ui/ModalDelete";
 import { ModalAdd } from "@/components/ui/ModalAdd";
+import { ModalConnections } from "@/components/ui/ModalFollowing";
 
 interface ProfileData {
   id: string;
@@ -46,6 +47,11 @@ export default function ProfileView({
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+
+  const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
+  const [connectionsType, setConnectionsType] = useState<
+    "followers" | "following"
+  >("followers");
 
   const currentYearNum = new Date().getFullYear();
   const yearsRange = Array.from({ length: currentYearNum - 2004 }, (_, i) =>
@@ -421,19 +427,32 @@ export default function ProfileView({
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-6 lg:gap-8 mt-4 lg:mt-0">
               <div className="flex gap-6 border-y md:border-y-0 md:border-x border-border py-6 md:py-0 md:px-6">
-                <div className="text-center md:text-left">
-                  <span className="block text-2xl font-black tracking-tighter leading-none text-foreground">
+                <div
+                  onClick={() => {
+                    setConnectionsType("followers");
+                    setIsConnectionsOpen(true);
+                  }}
+                  className="text-center md:text-left cursor-pointer group/stat select-none"
+                >
+                  <span className="block text-2xl font-black tracking-tighter leading-none text-foreground group-hover/stat:underline decoration-2">
                     {followersCount}
                   </span>
-                  <span className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase">
+                  <span className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase group-hover/stat:text-foreground transition-colors">
                     Followers
                   </span>
                 </div>
-                <div className="text-center md:text-left">
-                  <span className="block text-2xl font-black tracking-tighter leading-none text-foreground">
+
+                <div
+                  onClick={() => {
+                    setConnectionsType("following");
+                    setIsConnectionsOpen(true);
+                  }}
+                  className="text-center md:text-left cursor-pointer group/stat select-none"
+                >
+                  <span className="block text-2xl font-black tracking-tighter leading-none text-foreground group-hover/stat:underline decoration-2">
                     {followingCount}
                   </span>
-                  <span className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase">
+                  <span className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase group-hover/stat:text-foreground transition-colors">
                     Following
                   </span>
                 </div>
@@ -451,7 +470,7 @@ export default function ProfileView({
                   disabled={!currentUserId}
                   className={`w-full sm:w-auto px-8 py-3 text-xs font-black uppercase tracking-widest transition-all duration-200 border cursor-pointer ${
                     isFollowing
-                      ? "bg-background text-foreground/30 border-border"
+                      ? "bg-background text-foreground/30 border-border hover:border-red-500 hover:text-red-500"
                       : "bg-foreground text-background border-border hover:bg-background hover:text-foreground active:scale-95"
                   }`}
                 >
@@ -512,6 +531,14 @@ export default function ProfileView({
           onDelete={handleDeleteItem}
         />
       )}
+
+      <ModalConnections
+        isOpen={isConnectionsOpen}
+        onClose={() => setIsConnectionsOpen(false)}
+        userId={user.id}
+        currentUserId={currentUserId}
+        type={connectionsType}
+      />
     </div>
   );
 }
