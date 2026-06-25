@@ -79,7 +79,6 @@ export default function ProfileView({
   ];
 
   const baseBiasCategories = [
-    { title: "Soloists", items: [] },
     { title: "Ults of Ults", items: [] },
     { title: "Ults", items: [] },
     { title: "Semi Ults", items: [] },

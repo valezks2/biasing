@@ -418,7 +418,7 @@ export default function SettingsPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 maxLength={20}
-                className="border border-border p-3 bg-background text-xs font-bold uppercase tracking-wider focus:outline-none text-foreground"
+                className="border border-border p-3 bg-background text-xs font-bold tracking-wider focus:outline-none text-foreground"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -430,7 +430,7 @@ export default function SettingsPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 maxLength={10}
-                className="border border-border p-3 bg-background text-xs font-bold uppercase tracking-wider focus:outline-none text-foreground"
+                className="border border-border p-3 bg-background text-xs font-bold tracking-wider focus:outline-none text-foreground"
               />
             </div>
           </div>
