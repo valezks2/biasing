@@ -265,7 +265,7 @@ const Header = () => {
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-3 w-80 bg-background border border-border z-50 flex flex-col shadow-2xl">
+            <div className="absolute right-0 mt-3 w-80 bg-background border border-border z-50 flex flex-col">
               <div className="px-6 py-4 border-b border-border text-[10px] font-black uppercase tracking-widest text-foreground">
                 Notifications
               </div>
