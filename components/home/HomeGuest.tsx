@@ -71,7 +71,7 @@ export default function HomeGuest() {
                 <br />
                 ING.
               </h1>
-              <p className="text-xl lg:text-2xl font-medium leading-tight max-w-md text-foreground">
+              <p className="text-xl lg:text-2xl font-medium leading-tight max-w-sm text-foreground">
                 The ultimate archive for k-pop fans.{" "}
                 <span className="text-foreground/40">Record every memory.</span>
               </p>

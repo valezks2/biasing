@@ -169,7 +169,6 @@ export const ModalConnections = ({
                       <div className="h-2 bg-foreground/5 w-1/2" />
                     </div>
                   </div>
-                  {/* Botón esqueleto */}
                   <div className="w-16 h-6 bg-foreground/10 border border-border flex-shrink-0" />
                 </div>
               ))}
@@ -184,7 +183,6 @@ export const ModalConnections = ({
                   key={conn.id}
                   className="flex items-center justify-between py-3 px-2 hover:bg-foreground/5 transition-colors group"
                 >
-                  {/* Enlace al perfil */}
                   <a
                     href={`/${conn.username}`}
                     className="flex items-center gap-3 flex-1 truncate mr-2"
@@ -206,7 +204,6 @@ export const ModalConnections = ({
                     </div>
                   </a>
 
-                  {/* Botón de acción (Oculto si soy yo o si no estoy logueado) */}
                   {currentUserId && !isMe && (
                     <button
                       onClick={() =>
